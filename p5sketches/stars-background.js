@@ -10,9 +10,10 @@ function SingleStar(x, y, size){
 
   this.show = function(){
     noStroke();
-    rectMode(CENTER);
+    //rectMode(CENTER);
     fill(255);
-    rect(this.x, this.y, this.size, this.size);
+    //rect(this.x, this.y, this.size, this.size);
+    ellipse(this.x, this.y, this.size, this.size);
   }
 
   this.update = function(){
@@ -20,9 +21,13 @@ function SingleStar(x, y, size){
     // x
     if(this.x > width){
       this.x = 0;
+      var rnd = Math.random() * 2 - 1;
+      this.y += rnd * 10;
     }
     else if(this.x < 0){
       this.x = width;
+      var rnd = Math.random() * 2 - 1;
+      this.y += rnd * 10;
     }
     else{
       this.x += this.dirX * this.velocity;
@@ -30,9 +35,13 @@ function SingleStar(x, y, size){
     // y
     if(this.y > height){
       this.y = 0;
+      var rnd = Math.random() * 2 - 1;
+      this.x += rnd * 10;
     }
     else if(this.y < 0){
       this.y = height;
+      var rnd = Math.random() * 2 - 1;
+      this.x += rnd * 10;
     }
     else{
       this.y += this.dirY * this.velocity;
@@ -71,7 +80,7 @@ function BackgroundManager(numberOfStars){
     else{
       offsetX = everyFourty * distance + (rnd - 0.4) * 40;
     }
-    this.starsInBackground[i] = new SingleStar(15 + offsetX, 5 + 50 * rnd2 + offsetY, 1 + rnd * 2);
+    this.starsInBackground[i] = new SingleStar(15 + offsetX, 5 + 50 * rnd2 + offsetY, 1 + rnd);
   }
 
   this.show = function(){

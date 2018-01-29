@@ -2,14 +2,32 @@
 <html>
   <head>
     <meta charset="utf-8">
+    <link href="https://fonts.googleapis.com/css?family=VT323" rel="stylesheet"/>
     <script src="libraries/p5.js"></script>
     <script src="libraries/p5.dom.js"></script>
     <script src="libraries/p5.sound.js"></script>
     <script src="p5sketches/main.js"></script>
     <script src="p5sketches/player-ship.js"></script>
     <script src="p5sketches/stars-background.js"></script>
+    <script src="p5sketches/navigation.js"></script>
+    <script src="p5sketches/planet.js"></script>
+    <style type="text/css" media="screen">
+      .inGameStats{
+        position: relative;
+        font-family: 'VT323', monospace;
+        z-index: 1000;
+        background-color: white;
+        padding: 2px;
+      }
+      #Coordinate{
+        position: absolute;
+        top: 500px;
+        left: 20px;
+      }
+    </style>
     <title>Space Game</title>
   </head>
   <body>
+    <p id="Coordinate" class="inGameStats"></p>
   </body>
 </html>

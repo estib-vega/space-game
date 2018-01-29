@@ -6,21 +6,27 @@ function PlayerShip(x, y){
 
   this.rotationDelta = 0;
 
-  this.coorX = 0;
-  this.coorY = 0;
-
   this.size = 4;
   this.angle = 0;
+
   this.show = function(){
+    var angle = this.angle * Math.PI / 180;
+
+    var x2 = - Math.sin(angle) * this.velocity * 2;
+    var y2 = Math.cos(angle) * this.velocity * 2;
+
     noStroke();
-    translate(this.x, this.y);
+    translate(this.x - x2, this.y - y2);
     rotate(this.angle);
     rectMode(CENTER);
 
     fill(255 - (222 * this.velocity / 5), 200 - (41 * this.velocity / 5), 0 + (255 * this.velocity / 5));
-    rect(-6, 0 + 10, this.size * 2, this.size + (10 * this.velocity / 5));
-    rect(6, 0 + 10, this.size * 2, this.size + (10 * this.velocity / 5));
+
+    rect(-6, 0 + 10 + (5 * this.velocity / 5), this.size * 2, this.size + (10 * this.velocity / 5));
+    rect(6, 0 + 10 + (5 * this.velocity / 5), this.size * 2, this.size + (10 * this.velocity / 5));
+
     fill(255);
+    
     rect(0,- 3, this.size, this.size * 8);
     rect(0, 0, this.size * 3, this.size * 3);
     rect(0, 4, this.size * 8, this.size * 2);
@@ -31,12 +37,7 @@ function PlayerShip(x, y){
   this.update = function(){
     // rotate ship
     this.angle += this.rotationDelta;
-    /*if(this.angle >= 360){
-      this.angle -= 360;
-    }
-    else if(this.angle < 0){
-      this.angle += 360;
-    }*/
+
     // velocity
     if(this.accelerate){
       if(this.velocity <= 4.7){
@@ -45,13 +46,12 @@ function PlayerShip(x, y){
     }
     else{
       if(this.velocity >= 0.15){
-        this.velocity -= 0.15;
+        this.velocity -= 0.1;
       }
       else{
         this.velocity = 0;
       }
     }
-    //console.log("angle: " + this.angle);
   }
 
   this.rotate = function(direction){
