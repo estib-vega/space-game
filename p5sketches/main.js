@@ -5,7 +5,7 @@ function setup(){
   angleMode(DEGREES);
   back = new BackgroundManager(400);
   player = new PlayerShip(width / 2, height / 2);
-  navigation = new NavigationManager(50);
+  navigation = new NavigationManager(0);
   coorSign = select("#Coordinate");
   planets = new PlanetManager(navigation.getCoordinates()[0], navigation.getCoordinates()[1]);
 }
