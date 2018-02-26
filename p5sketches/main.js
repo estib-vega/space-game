@@ -1,5 +1,5 @@
-var player, back, navigation, planets, coorSign;
-var pause, isInLevelPlanet, isEnteringPlanet;
+var player, back, navigation, planets, coorSign, planetLevel;
+var pause, isInLevelPlanet, isEnteringPlanet, isExitingPlanet;
 function setup(){
   createCanvas(600, 600);
   angleMode(DEGREES);
@@ -11,7 +11,7 @@ function setup(){
   planets.generatePlanets(navigation.getCoordinates()[0], navigation.getCoordinates()[1]);
   pause = false;
   isInLevelPlanet = false;
-  isEnteringPlanet = false;
+  isEnteringPlanet, isExitingPlanet = false;
 }
 
 function draw(){
@@ -26,14 +26,19 @@ function draw(){
         back.update();
       }
       else{
-        if(planets.isInsidePlanet()){
+        if(planets.isInsidePlanet() && !isExitingPlanet){
+          planetLevel = new PlanetLevel(planets.planetEntered.coordX, planets.planetEntered.coordY);
           isInLevelPlanet = true;
           player.moveToLowerEnd();
           console.log("Inside");
           coorSign.style("display", "none");
         }
+        else{
+          //player.moveToCenter();
+        }
       }
       planets.move(player.rotationDelta, player.velocity, navigation.getCoordinates()[0], navigation.getCoordinates()[1]);
+
       planets.update();
 
       player.update();
@@ -51,10 +56,13 @@ function draw(){
     background(planets.planetEntered.r, planets.planetEntered.g, planets.planetEntered.b);
     if(!pause){
       player.update();
-
+      planetLevel.update();
     }
 
+    planetLevel.show();
+
     player.show();
+
   }
 
 }
@@ -64,7 +72,12 @@ function keyReleased(){
     player.rotate(0);
   }
   if(keyCode === UP_ARROW){
+    if(!isInLevelPlanet){
       player.move(false);
+    }
+    else{
+      player.shoot();
+    }
   }
 }
 
@@ -80,8 +93,11 @@ function keyPressed(){
     }
   }
   if (keyCode === UP_ARROW) {
-    if(!pause && !isEnteringPlanet){
-      player.move(true);
+    if(!pause){
+      if(!isEnteringPlanet){
+        player.move(true);
+      }
+
     }
   }
   if (key === ' ') {

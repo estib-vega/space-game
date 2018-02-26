@@ -72,6 +72,8 @@ function Planet(x, y, coordX, coordY){
   this.dirY = 0;
 
   this.isEnteringPlanet = false;
+  //this.isExitingPlanet = false;
+  this.isInsidePlanet = false;
   this.addedRadius = 0;
   this.maxRadius = 0;
 
@@ -117,12 +119,12 @@ function Planet(x, y, coordX, coordY){
   }
 
   this.update = function(){
-    if(!this.isEnteringPlanet){
+    if(!this.isEnteringPlanet && !this.isExitingPlanet){
       this.x += this.dirX * this.velocity;
       this.y += this.dirY * this.velocity;
     }
-    else{
-      this.addedRadius += this.maxRadius / 150;
+    else if(this.isEnteringPlanet){
+      this.addedRadius += this.maxRadius / 100;
       if(this.moonNumber > 0){
         for(var i = 0; i < this.moonNumber; i++){
           this.moons[i].setAddedRadius(this.addedRadius);
@@ -130,8 +132,22 @@ function Planet(x, y, coordX, coordY){
       }
       if(this.addedRadius + this.radius >= this.maxRadius){
         this.isEnteringPlanet = false
+        this.isInsidePlanet = true;
       }
     }
+    /*else if(this.isExitingPlanet){
+      this.addedRadius -= this.addedRadius / 25;
+      if(this.moonNumber > 0){
+        for(var i = 0; i < this.moonNumber; i++){
+          this.moons[i].setAddedRadius(this.addedRadius);
+        }
+      }
+      if(this.addedRadius == 0){
+        this.maxRadius = 0;
+        this.isExitingPlanet = false
+        this.isInsidePlanet = false;
+      }
+    }*/
 
     if(this.moonNumber > 0){
       for(var i = 0; i < this.moonNumber; i++){
@@ -161,6 +177,10 @@ function Planet(x, y, coordX, coordY){
     this.maxRadius = Math.sqrt(a*a + b*b);
   }
 
+  /*this.exitPlanet = function(){
+    this.isExitingPlanet = true;
+  }*/
+
 }
 
 function PlanetManager(){
@@ -176,7 +196,7 @@ function PlanetManager(){
   this.velocity = 0;
 
   this.dimention = 1800;
-  this.dimentionCheck = 865;
+  this.dimentionCheck = 876;
 
   this.isEnteringPlanet = false;
   this.planetEntered;
@@ -304,8 +324,12 @@ function PlanetManager(){
     }
   }
 
+  /*this.exitPlanet = function(){
+    this.planetEntered.exitPlanet();
+  }*/
+
   this.isInsidePlanet = function(){
-    return !this.planetEntered.isEnteringPlanet;
+    return this.planetEntered.isInsidePlanet;
   }
 
 }

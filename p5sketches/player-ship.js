@@ -13,6 +13,8 @@ function PlayerShip(){
   this.isInPlanet = false;
   this.direction = 0;
 
+  this.positionInCenter = false;
+
   this.show = function(){
     var angle = this.angle * Math.PI / 180;
 
@@ -99,6 +101,25 @@ function PlayerShip(){
       }
 
     }
+    /*else if(this.positionInCenter){
+      // position in center
+      var positionEnded = false;
+      if(this.y == height / 2){
+        positionEnded = true;
+      }
+      else{
+        this.y -= 10;
+      }
+
+      if(positionEnded){
+        this.positionInCenter = false;
+        this.isInPlanet = false;
+      }
+
+    }*/
+
+
+
   }
 
   this.rotate = function(direction){
@@ -112,5 +133,13 @@ function PlayerShip(){
 
   this.moveToLowerEnd = function(){
     this.positionInLowerEnd = true;
+  }
+
+  /*this.moveToCenter = function(){
+    this.positionInCenter = true;
+  }*/
+
+  this.shoot = function(){
+    console.log("shoot");
   }
 }
