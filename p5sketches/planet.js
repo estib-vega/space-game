@@ -18,11 +18,13 @@ function Moon(x, y, radius, color, orbitLengthX, orbitLengthY){
   this.velocity = 0;
   this.orbitalTimer = radius;
 
+  this.addedRadius = 0;
+
   this.show = function(){
     noStroke();
     fill(this.r, this.g, this.b);
     ellipseMode(RADIUS);
-    ellipse(this.currX, this.currY, this.radius, this.radius);
+    ellipse(this.currX, this.currY, this.radius + this.addedRadius / 8, this.radius + this.addedRadius / 8);
   }
 
   this.update = function(){
@@ -39,11 +41,15 @@ function Moon(x, y, radius, color, orbitLengthX, orbitLengthY){
   }
 
   this.orbit = function(){
-    this.currX = this.x - this.orbitLengthX * Math.cos(this.orbitalTimer);
-    this.currY = this.y - this.orbitLengthY * Math.sin(this.orbitalTimer);
+    this.currX = this.x - (this.orbitLengthX + this.addedRadius * 2) * Math.cos(this.orbitalTimer);
+    this.currY = this.y - (this.orbitLengthY + this.addedRadius * 2) * Math.sin(this.orbitalTimer);
 
     this.orbitalTimer += 0.1 / this.radius;
 
+  }
+
+  this.setAddedRadius = function(add){
+    this.addedRadius = add;
   }
 
 }
@@ -64,6 +70,10 @@ function Planet(x, y, coordX, coordY){
 
   this.dirX = 0;
   this.dirY = 0;
+
+  this.isEnteringPlanet = false;
+  this.addedRadius = 0;
+  this.maxRadius = 0;
 
   this.sig = function(x){
     return 1 / (1 + Math.exp(-x));
@@ -87,7 +97,6 @@ function Planet(x, y, coordX, coordY){
       var xOrbit = this.radius + 25 + i * 40 + r;
       var yOrbit = this.radius + 50 + i * 40 + r;
       var rOffset = 100 + 25 * i;
-      var bOffset = 150 + 35 * i;
 
       this.moons.push(new Moon(this.x, this.y, r, [this.b + 100, this.g, Math.abs(this.r - rOffset)], xOrbit, yOrbit));
     }
@@ -97,7 +106,7 @@ function Planet(x, y, coordX, coordY){
     noStroke();
     fill(this.r, this.g, this.b);
     ellipseMode(RADIUS);
-    ellipse(this.x, this.y, this.radius, this.radius);
+    ellipse(this.x, this.y, this.radius + this.addedRadius, this.radius + this.addedRadius);
 
     if(this.moonNumber > 0){
       for(var i = 0; i < this.moonNumber; i++){
@@ -108,8 +117,21 @@ function Planet(x, y, coordX, coordY){
   }
 
   this.update = function(){
-    this.x += this.dirX * this.velocity;
-    this.y += this.dirY * this.velocity;
+    if(!this.isEnteringPlanet){
+      this.x += this.dirX * this.velocity;
+      this.y += this.dirY * this.velocity;
+    }
+    else{
+      this.addedRadius += this.maxRadius / 150;
+      if(this.moonNumber > 0){
+        for(var i = 0; i < this.moonNumber; i++){
+          this.moons[i].setAddedRadius(this.addedRadius);
+        }
+      }
+      if(this.addedRadius + this.radius >= this.maxRadius){
+        this.isEnteringPlanet = false
+      }
+    }
 
     if(this.moonNumber > 0){
       for(var i = 0; i < this.moonNumber; i++){
@@ -132,6 +154,13 @@ function Planet(x, y, coordX, coordY){
 
   }
 
+  this.enterPlanet = function(){
+    this.isEnteringPlanet = true;
+    let a = this.x >= this.y ? this.x : this.y;
+    let b = this.x >= this.y ? height - (this.y - this.radius) : width - (this.x - this.radius);
+    this.maxRadius = Math.sqrt(a*a + b*b);
+  }
+
 }
 
 function PlanetManager(){
@@ -149,23 +178,10 @@ function PlanetManager(){
   this.dimention = 1800;
   this.dimentionCheck = 865;
 
-  /*var currX, currY;
-  var x = -300;
-  var y = 300;
-  for(var i = 0; i < 800; i++){
-    x += 20;
-    if(x > 600){
-      y -= 50;
-      x = -300;
-    }
-    currX = width / 2 + (x - this.xCoor);
-    currY = height / 2 - (y - this.yCoor);
-    this.planets.push(new Planet(currX, currY, x, y));
-    this.planetsToPaint.push(false);
-  }*/
+  this.isEnteringPlanet = false;
+  this.planetEntered;
 
   // procedurally generated planets.
-  // **
   this.generatePlanets = function(xCoor, yCoor){
     // - 746 _ 907
     if(this.planets.length > 0){
@@ -208,7 +224,7 @@ function PlanetManager(){
         }
       }
     }
-    console.log(this.planets.length);
+    //console.log(this.planets.length);
   }
 
 
@@ -267,6 +283,29 @@ function PlanetManager(){
         }
       }
     }
-
   }
+
+  this.enterPlanet = function(xCoor, yCoor){
+    var pXMin, pXMax, pYMin, pXMax;
+    if(this.planets.length > 0){
+      for(var planet = 0; planet < this.planets.length; planet++){
+        pXMin = this.planets[planet].coordX - this.planets[planet].radius;
+        pXMax = this.planets[planet].coordX + this.planets[planet].radius;
+        pYMin = this.planets[planet].coordY - this.planets[planet].radius;
+        pYMax = this.planets[planet].coordY + this.planets[planet].radius;
+
+        if(xCoor <= pXMax && xCoor >= pXMin && yCoor <= pYMax && yCoor >= pYMin){
+          console.log("Entering planet...");
+          this.isEnteringPlanet = true;
+          this.planetEntered = this.planets[planet];
+          this.planets[planet].enterPlanet();
+        }
+      }
+    }
+  }
+
+  this.isInsidePlanet = function(){
+    return !this.planetEntered.isEnteringPlanet;
+  }
+
 }

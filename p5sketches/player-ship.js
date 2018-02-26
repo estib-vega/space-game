@@ -1,6 +1,6 @@
-function PlayerShip(x, y){
-  this.x = x;
-  this.y = y;
+function PlayerShip(){
+  this.x = width / 2;
+  this.y = height / 2;
 
   this.velocity = 0;
 
@@ -8,6 +8,10 @@ function PlayerShip(x, y){
 
   this.size = 4;
   this.angle = 0;
+
+  this.positionInLowerEnd = false;
+  this.isInPlanet = false;
+  this.direction = 0;
 
   this.show = function(){
     var angle = this.angle * Math.PI / 180;
@@ -35,30 +39,78 @@ function PlayerShip(x, y){
   }
 
   this.update = function(){
-    // rotate ship
-    this.angle += this.rotationDelta;
+    if(!this.isInPlanet){
+      // rotate ship
+      this.angle += this.rotationDelta;
 
-    // velocity
-    if(this.accelerate){
-      if(this.velocity <= 3.7){
-        this.velocity += 0.3;
+      // velocity
+      if(this.accelerate){
+        if(this.velocity <= 3.7){
+          this.velocity += 0.3;
+        }
+      }
+      else{
+        if(this.velocity >= 0.15){
+          this.velocity -= 0.1;
+        }
+        else{
+          this.velocity = 0;
+        }
       }
     }
     else{
-      if(this.velocity >= 0.15){
-        this.velocity -= 0.1;
+      if(this.x >= 50 && this.x <= width - 50){
+        this.x += this.direction * 10;
       }
       else{
-        this.velocity = 0;
+        if(this.x < 50){
+          this.x = 50;
+        }
+        else if(this.x > width - 50){
+          this.x = width - 50;
+        }
       }
+
+    }
+
+
+    // position in lower end
+    if(this.positionInLowerEnd){
+      var positionEnded = false;
+      var angleEnded = false;
+
+      if(this.angle % 360 == 0){
+        angleEnded = true;
+      }
+      else{
+        this.angle = parseInt(this.angle) + (360 - parseInt(this.angle) % 360);
+      }
+
+      if(this.y >= height - 40){
+        positionEnded = true;
+      }
+      else{
+        this.y += 10;
+      }
+
+      if(positionEnded && angleEnded){
+        this.positionInLowerEnd = false;
+        this.isInPlanet = true;
+      }
+
     }
   }
 
   this.rotate = function(direction){
     this.rotationDelta = direction * 2.5;
+    this.direction = direction;
   }
 
   this.move = function(accelerate){
     this.accelerate = accelerate;
+  }
+
+  this.moveToLowerEnd = function(){
+    this.positionInLowerEnd = true;
   }
 }
