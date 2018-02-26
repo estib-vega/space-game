@@ -70,9 +70,13 @@ function Planet(x, y, coordX, coordY){
   }
 
   // proceduarally generated color
-  this.r = 100 * Math.abs(this.sig(coordX)); 
-  this.g = 200 * Math.abs(this.sig(coordY));
-  this.b = 50;
+  this.r = 255 * Math.abs(Math.cos(coordX - 200 * this.sig(Math.cos(coordX) + Math.sin(coordY))));
+  this.g = 255 * Math.abs(Math.sin(coordY - 280 * this.sig(Math.cos(coordX) + Math.sin(coordY))));
+  this.b = 255 * this.sig(Math.cos(coordX) + Math.sin(coordY));
+
+  this.r = parseInt(this.r);
+  this.g = parseInt(this.g);
+  this.b = parseInt(this.b);
 
   // procedurally generated moons
   this.moonNumber = parseInt(5 *  Math.abs(Math.cos(coordX)) + 2 *  Math.abs(Math.sin(coordY)));
@@ -91,7 +95,7 @@ function Planet(x, y, coordX, coordY){
 
   this.show = function(){
     noStroke();
-    fill(70 + this.r, 50 + this.g, 100 + this.b);
+    fill(this.r, this.g, this.b);
     ellipseMode(RADIUS);
     ellipse(this.x, this.y, this.radius, this.radius);
 
@@ -130,59 +134,85 @@ function Planet(x, y, coordX, coordY){
 
 }
 
-function PlanetManager(xr, yr){
+function PlanetManager(){
   this.planets = [];
   this.planetsToPaint = [];
-  this.paintPlanet = false;
+  //this.paintPlanet = false;
 
-  this.xCoor = xr;
-  this.yCoor = yr;
+  this.xCoor;
+  this.yCoor;
 
   this.dirX = 0;
   this.dirY = 1;
   this.velocity = 0;
 
-  var x = 5;
-  var y = -300;
+  this.dimention = 2000;
+  this.dimentionCheck = 1865;
 
-  console.log(x + " " + y);
+  /*var currX, currY;
+  var x = -300;
+  var y = 300;
+  for(var i = 0; i < 800; i++){
+    x += 20;
+    if(x > 600){
+      y -= 50;
+      x = -300;
+    }
+    currX = width / 2 + (x - this.xCoor);
+    currY = height / 2 - (y - this.yCoor);
+    this.planets.push(new Planet(currX, currY, x, y));
+    this.planetsToPaint.push(false);
+  }*/
 
-  var currX = width / 2 + (x - this.xCoor);
-  var currY = height / 2 - (y - this.yCoor);
-  this.planets.push(new Planet(currX, currY, x, y));
-  this.planetsToPaint.push(false);
+  // procedurally generated planets.
+  // **
+  this.generatePlanets = function(xCoor, yCoor){
+    // - 746 _ 907
+    if(this.planets.length > 0){
+      this.planets = [];
+      this.planetsToPaint = [];
+    }
+    this.xCoor = xCoor;
+    this.yCoor = yCoor;
 
-  //-----
+    var x, y, currX, currY;
+    var endedPlanetGeneration = false;
 
-  x = -300;
-  y = -300;
+    // start from the top right
 
-  console.log(x + " " + y);
+    let xMax = parseInt(this.xCoor) + this.dimention;
+    let xMin = parseInt(this.xCoor) - this.dimention;
+    let yMin = parseInt(this.yCoor) - this.dimention;
 
-  currX = width / 2 + (x - this.xCoor);
-  currY = height / 2 - (y - this.yCoor);
-  this.planets.push(new Planet(currX, currY, x, y));
-  this.planetsToPaint.push(false);
+    x = xMin;
+    y = parseInt(this.yCoor) + this.dimention;
 
-  x = 300;
-  y = 300;
+    while(!endedPlanetGeneration){
+      //console.log("not ended");
+      if(Math.abs(x) % this.dimention == this.dimentionCheck){
+        if(Math.abs(y) % this.dimention == this.dimentionCheck){
+          currX = width / 2 + ((x - x /12) - this.xCoor);
+          currY = height / 2 - ((y + y /12) - this.yCoor);
+          this.planets.push(new Planet(currX, currY, (x - x /123), (y + y /123)));
+          this.planetsToPaint.push(false);
+          console.log("x: " + (x - x /123) + " y: " + (y + y /123));
+        }
+      }
+      x++;
+      if(x > xMax){
+        if(y <= yMin){
+          endedPlanetGeneration = true;
+        }
+        else{
+          x = xMin;
+          y--;
+        }
+      }
+    }
+    console.log(this.planets.length);
+  }
 
-  console.log(x + " " + y);
 
-  currX = width / 2 + (x - this.xCoor);
-  currY = height / 2 - (y - this.yCoor);
-  this.planets.push(new Planet(currX, currY, x, y));
-  this.planetsToPaint.push(false);
-
-  x = -300;
-  y = 300;
-
-  console.log(x + " " + y);
-
-  currX = width / 2 + (x - this.xCoor);
-  currY = height / 2 - (y - this.yCoor);
-  this.planets.push(new Planet(currX, currY, x, y));
-  this.planetsToPaint.push(false);
 
   this.show = function(){
     if(this.planets.length < 1){
@@ -217,10 +247,18 @@ function PlanetManager(xr, yr){
     this.dirX = x2;
     this.dirY = y2;
 
+    // check if the ship has exited the cuadrant of planets so that it generates
+    // a new array of planets
+    if(xCoor < this.xCoor - this.dimention || xCoor > this.xCoor + this.dimention || yCoor < this.yCoor - this.dimention || yCoor > this.yCoor + this.dimention){
+      this.generatePlanets(xCoor, yCoor);
+    }
+
     // paint planets
+    var wDistance = width * 2;
+    var hDistance = height * 2;
     if(this.planets.length > 0){
       for(var planet = 0; planet < this.planets.length; planet++){
-        if(xCoor >= (this.planets[planet].coordX - width) && xCoor <= (this.planets[planet].coordX + width) && yCoor >= (this.planets[planet].coordY - height) && yCoor <= (this.planets[planet].coordY + height)){
+        if(xCoor >= (this.planets[planet].coordX - wDistance) && xCoor <= (this.planets[planet].coordX + wDistance) && yCoor >= (this.planets[planet].coordY - hDistance) && yCoor <= (this.planets[planet].coordY + hDistance)){
           this.planetsToPaint[planet] = true;
           //console.log("paint");
         }
