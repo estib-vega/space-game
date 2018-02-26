@@ -20,13 +20,13 @@ function PlayerShip(x, y){
     rotate(this.angle);
     rectMode(CENTER);
 
-    fill(255 - (222 * this.velocity / 5), 200 - (41 * this.velocity / 5), 0 + (255 * this.velocity / 5));
+    fill(255 - (222 * this.velocity / 4), 200 - (41 * this.velocity / 4), 0 + (255 * this.velocity / 4));
 
-    rect(-6, 0 + 10 + (5 * this.velocity / 5), this.size * 2, this.size + (10 * this.velocity / 5));
-    rect(6, 0 + 10 + (5 * this.velocity / 5), this.size * 2, this.size + (10 * this.velocity / 5));
+    rect(-6, 0 + 10 + (5 * this.velocity / 4), this.size * 2, this.size + (10 * this.velocity / 4));
+    rect(6, 0 + 10 + (5 * this.velocity / 4), this.size * 2, this.size + (10 * this.velocity / 4));
 
     fill(255);
-    
+
     rect(0,- 3, this.size, this.size * 8);
     rect(0, 0, this.size * 3, this.size * 3);
     rect(0, 4, this.size * 8, this.size * 2);
@@ -40,7 +40,7 @@ function PlayerShip(x, y){
 
     // velocity
     if(this.accelerate){
-      if(this.velocity <= 4.7){
+      if(this.velocity <= 3.7){
         this.velocity += 0.3;
       }
     }

@@ -146,8 +146,8 @@ function PlanetManager(){
   this.dirY = 1;
   this.velocity = 0;
 
-  this.dimention = 2000;
-  this.dimentionCheck = 1865;
+  this.dimention = 1800;
+  this.dimentionCheck = 865;
 
   /*var currX, currY;
   var x = -300;
@@ -169,8 +169,8 @@ function PlanetManager(){
   this.generatePlanets = function(xCoor, yCoor){
     // - 746 _ 907
     if(this.planets.length > 0){
-      this.planets = [];
-      this.planetsToPaint = [];
+      this.planets.splice(0,this.planets.length);
+      this.planetsToPaint.splice(0,this.planetsToPaint.length);
     }
     this.xCoor = xCoor;
     this.yCoor = yCoor;
@@ -188,14 +188,13 @@ function PlanetManager(){
     y = parseInt(this.yCoor) + this.dimention;
 
     while(!endedPlanetGeneration){
-      //console.log("not ended");
       if(Math.abs(x) % this.dimention == this.dimentionCheck){
         if(Math.abs(y) % this.dimention == this.dimentionCheck){
           currX = width / 2 + ((x - x /12) - this.xCoor);
           currY = height / 2 - ((y + y /12) - this.yCoor);
-          this.planets.push(new Planet(currX, currY, (x - x /123), (y + y /123)));
+          this.planets.push(new Planet(currX, currY, (x - x /12), (y + y /12)));
           this.planetsToPaint.push(false);
-          console.log("x: " + (x - x /123) + " y: " + (y + y /123));
+          //console.log("x: " + (x - x /12) + " y: " + (y + y /12));
         }
       }
       x++;
