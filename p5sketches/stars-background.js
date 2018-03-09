@@ -107,4 +107,9 @@ function BackgroundManager(numberOfStars){
     this.dirY = y2;
 
   }
+
+  this.resetDir = function(){
+    this.dirX = 0;
+    this.dirY = 1;
+  }
 }

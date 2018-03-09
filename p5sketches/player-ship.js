@@ -101,30 +101,45 @@ function PlayerShip(){
       }
 
     }
-    /*else if(this.positionInCenter){
+    else if(this.positionInCenter){
       // position in center
-      var positionEnded = false;
-      if(this.y == height / 2){
-        positionEnded = true;
+      var positionYEnded = false;
+      var positionXEnded = false;
+
+      if(this.x == width / 2){
+        positionXEnded = true;
+
+        if(this.y == height / 2){
+          positionYEnded = true;
+        }
+        else{
+          this.y -= 10;
+        }
       }
       else{
-        this.y -= 10;
+        if(this.x < width / 2){
+          this.x++;
+        }
+        else{
+          this.x--;
+        }
       }
 
-      if(positionEnded){
+      if(positionYEnded){
         this.positionInCenter = false;
         this.isInPlanet = false;
+        this.rotationDelta = 0;
       }
-
-    }*/
-
-
+    }
 
   }
 
   this.rotate = function(direction){
     this.rotationDelta = direction * 2.5;
-    this.direction = direction;
+  }
+
+  this.directionSet = function(dir){
+    this.direction = dir;
   }
 
   this.move = function(accelerate){
@@ -135,9 +150,13 @@ function PlayerShip(){
     this.positionInLowerEnd = true;
   }
 
-  /*this.moveToCenter = function(){
+  this.moveToCenter = function(){
     this.positionInCenter = true;
-  }*/
+  }
+
+  this.completeStop = function(){
+    this.velocity = 0;
+  }
 
   this.shoot = function(){
     console.log("shoot");

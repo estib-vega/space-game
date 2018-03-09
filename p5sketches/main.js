@@ -11,8 +11,9 @@ function updateNavAndBack(){
 function setupPlanetLevel(){
   planetLevel = new PlanetLevel(planets.planetEntered.coordX, planets.planetEntered.coordY);
   isInLevelPlanet = true;
+  isEnteringPlanet = false;
   player.moveToLowerEnd();
-  console.log("Inside");
+  //console.log("Inside");
   coorSign.style("display", "none");
 }
 
@@ -44,6 +45,27 @@ function spaceExplorationLoop(){
   player.show();
 }
 
+function planetLevelLoop(){
+  background(planets.planetEntered.r, planets.planetEntered.g, planets.planetEntered.b);
+  if(!pause){
+    player.update();
+    planetLevel.update();
+
+    if(isExitingPlanet && planetLevel.fadeOutFinished()){
+      //console.log("Ended fadeOut");
+      planets.exitPlanet();
+      player.moveToCenter();
+      back.resetDir();
+      isExitingPlanet = false;
+      isInLevelPlanet = false;
+      coorSign.style("display", "block");
+      console.log("Outside");
+    }
+  }
+  planetLevel.show();
+  player.show();
+}
+
 function setup(){
   createCanvas(600, 600);
   angleMode(DEGREES);
@@ -66,23 +88,19 @@ function draw(){
     coorSign.html("X:" + navigation.getCoordinates()[0] + ", Y:" + navigation.getCoordinates()[1]);
   }
   else{
-    /*background(planets.planetEntered.r, planets.planetEntered.g, planets.planetEntered.b);
-    if(!pause){
-      player.update();
-      planetLevel.update();
-    }
-
-    planetLevel.show();
-
-    player.show();*/
-
+    planetLevelLoop();
   }
 
 }
 
 function keyReleased(){
   if(key != ' ' && (keyCode === LEFT_ARROW || keyCode === RIGHT_ARROW)){
-    player.rotate(0);
+    if(!isInLevelPlanet){
+      player.rotate(0);
+    }
+    else{
+      player.directionSet(0);
+    }
   }
   if(keyCode === UP_ARROW){
     if(!isInLevelPlanet){
@@ -94,17 +112,35 @@ function keyReleased(){
 function keyPressed(){
   if (keyCode === RIGHT_ARROW) {
     if(!pause){
-      player.rotate(1);
+      if(!isEnteringPlanet){
+        if(!isInLevelPlanet){
+          player.rotate(1);
+        }
+        else{
+          if(!isExitingPlanet){
+            player.directionSet(1);
+          }
+        }
+      }
     }
   }
   if (keyCode === LEFT_ARROW) {
     if(!pause){
-      player.rotate(-1);
+      if(!isEnteringPlanet){
+        if(!isInLevelPlanet){
+          player.rotate(-1);
+        }
+        else{
+          if(!isExitingPlanet){
+            player.directionSet(-1);
+          }
+        }
+      }
     }
   }
   if (keyCode === UP_ARROW) {
     if(!pause){
-      if(!isEnteringPlanet){
+      if(!isEnteringPlanet && !isInLevelPlanet){
         player.move(true);
       }
 
@@ -114,7 +150,18 @@ function keyPressed(){
     if(!pause){
       if(!isInLevelPlanet){
         planets.enterPlanet(navigation.getCoordinates()[0], navigation.getCoordinates()[1]);
-        isEnteringPlanet = true;
+        isEnteringPlanet = planets.isEnteringPlanet;
+        if(isEnteringPlanet){
+          player.completeStop();
+        }
+      }
+      else{
+        if(!isEnteringPlanet){
+          //console.log("Want to exit planet");
+          planetLevel.exitPlanetLevel();
+          player.rotate(0);
+          isExitingPlanet = true;
+        }
       }
     }
   }

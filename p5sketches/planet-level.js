@@ -9,9 +9,13 @@ function Bareer(bareerHeight, color, xOffset, yOffset){
   this.g;
   this.b;
 
-  this.currentR = color[0];
-  this.currentG = color[1];
-  this.currentB = color[2];
+  this.color = color;
+
+  this.currentR = this.color[0];
+  this.currentG = this.color[1];
+  this.currentB = this.color[2];
+
+  this.finishedFadeOut = false;
 
   this.startUp = function(){
     var rnd = Math.random();
@@ -20,14 +24,91 @@ function Bareer(bareerHeight, color, xOffset, yOffset){
 
     var decide = Math.random();
     if(decide > 0.1){
-      this.r = color[2] + 50 > 180 ? 180 : color[2] + 100;
-      this.g = color[1] - parseInt(170 * rnd) >= 0 ? color[1] - parseInt(170 * rnd) : 57;
-      this.b = color[0] - parseInt(200 * rnd) >= 0 ? color[0] - parseInt(55 * rnd) : 70;
+      this.r = this.color[2] + 50 > 180 ? 180 : this.color[2] + 50;
+      this.g = this.color[1] - parseInt(120 * rnd) >= 0 ? this.color[1] - parseInt(120 * rnd) : 57;
+      this.b = this.color[0] - parseInt(170 * rnd) >= 0 ? this.color[0] - parseInt(170 * rnd) : 70;
     }
     else{
-      this.r = parseInt(color[0] * (rnd * 0.5 + 0.5));
-      this.g = parseInt(color[1] * (rnd * 0.5 + 0.5));
-      this.b = parseInt(color[2] * (rnd * 0.5 + 0.5));
+      this.r = parseInt(this.color[0] * (rnd * 0.5 + 0.5));
+      this.g = parseInt(this.color[1] * (rnd * 0.5 + 0.5));
+      this.b = parseInt(this.color[2] * (rnd * 0.5 + 0.5));
+    }
+  }
+
+  this.fadeBareers = function(out){
+    if(!out){
+      if(this.currentR != this.r){
+        if(this.currentR < this.r){
+          this.currentR++;
+        }
+        else{
+          this.currentR--;
+        }
+      }
+
+      if(this.currentG != this.g){
+        if(this.currentG < this.g){
+          this.currentG++;
+        }
+        else{
+          this.currentG--;
+        }
+      }
+
+      if(this.currentB != this.b){
+        if(this.currentG < this.b){
+          this.currentG++;
+        }
+        else{
+          this.currentG--;
+        }
+      }
+    }
+    else{
+      // fadeOut
+      var rEnded = false;
+      var gEnded = false;
+      var bEnded = false;
+
+      if(this.currentR != this.color[0]){
+        if(this.currentR < this.color[0]){
+          this.currentR++;
+        }
+        else{
+          this.currentR--;
+        }
+      }
+      else{
+        rEnded = true;
+      }
+
+      if(this.currentG != this.color[1]){
+        if(this.currentG < this.color[1]){
+          this.currentG++;
+        }
+        else{
+          this.currentG--;
+        }
+      }
+      else{
+        gEnded = true;
+      }
+
+      if(this.currentB != this.color[2]){
+        if(this.currentG < this.color[2]){
+          this.currentG++;
+        }
+        else{
+          this.currentG--;
+        }
+      }
+      else{
+        bEnded = true;
+      }
+
+      if(rEnded && gEnded && bEnded){
+        this.finishedFadeOut = true;
+      }
     }
   }
 
@@ -38,27 +119,15 @@ function Bareer(bareerHeight, color, xOffset, yOffset){
     rect(50 * this.widthVariation / 2 + this.xOffset, -(this.bareerHeight / 2) + this.yOffset, this.bareerHeight * this.widthVariation, this.bareerHeight);
   }
 
-  this.update = function(){
+  this.update = function(fadeOut){
+
     this.yOffset += 5;
     if(this.yOffset >= height + this.bareerHeight){
       this.yOffset = -(this.bareerHeight / 2);
       this.startUp();
     }
-    let rate = 50;
-    if(this.currentR != this.r){
-      var diffR = this.currentR - this.r;
-      this.currentR -= diffR / rate;
-    }
 
-    if(this.currentG != this.g){
-      var diffG = this.currentG - this.g;
-      this.currentG -= diffG / rate;
-    }
-
-    if(this.currentB != this.b){
-      var diffB = this.currentB - this.b;
-      this.currentB -= diffB / rate;
-    }
+    this.fadeBareers(fadeOut);
 
   }
 }
@@ -70,6 +139,8 @@ function PlanetLevel(pXCoor, pYCoor){
   this.numberOfBareers = 50;
   this.bareers = [];
   this.bareerHeight = height / this.numberOfBareers;
+
+  this.shouldFadeOut = false;
 
   this.sig = function(x){
     return 1 / (1 + Math.exp(-x));
@@ -94,8 +165,6 @@ function PlanetLevel(pXCoor, pYCoor){
     this.bareers[i].startUp();
   }
 
-
-
   this.show = function(){
     noStroke();
     rectMode(CENTER);
@@ -107,7 +176,21 @@ function PlanetLevel(pXCoor, pYCoor){
 
   this.update = function(){
     for(var i = 0; i < this.bareers.length; i++){
-      this.bareers[i].update();
+      this.bareers[i].update(this.shouldFadeOut);
     }
   }
+
+  this.exitPlanetLevel = function(){
+    this.shouldFadeOut = true;
+  }
+
+  this.fadeOutFinished = function(){
+    for(var i = 0; i < this.bareers.length; i++){
+      if(!this.bareers[i].finishedFadeOut){
+        return false;
+      }
+    }
+    return true;
+  }
+
 }
