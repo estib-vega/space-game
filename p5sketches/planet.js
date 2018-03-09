@@ -16,6 +16,7 @@ function Moon(x, y, radius, color, orbitLengthX, orbitLengthY){
   this.dirY = 0;
 
   this.velocity = 0;
+
   this.orbitalTimer = radius;
 
   this.addedRadius = 0;
@@ -45,7 +46,6 @@ function Moon(x, y, radius, color, orbitLengthX, orbitLengthY){
     this.currY = this.y - (this.orbitLengthY + this.addedRadius * 2) * Math.sin(this.orbitalTimer);
 
     this.orbitalTimer += 0.1 / this.radius;
-
   }
 
   this.setAddedRadius = function(add){
@@ -91,7 +91,7 @@ function Planet(x, y, coordX, coordY){
   this.b = parseInt(this.b);
 
   // procedurally generated moons
-  this.moonNumber = parseInt(5 *  Math.abs(Math.cos(coordX)) + 2 *  Math.abs(Math.sin(coordY)));
+  this.moonNumber = parseInt(3 *  Math.abs(Math.cos(coordX)) + 2 *  Math.abs(Math.sin(coordY)));
 
   if(this.moonNumber > 0){
     for(var i = 0; i < this.moonNumber; i++){
@@ -185,8 +185,6 @@ function Planet(x, y, coordX, coordY){
 
 function PlanetManager(){
   this.planets = [];
-  this.planetsToPaint = [];
-  //this.paintPlanet = false;
 
   this.xCoor;
   this.yCoor;
@@ -195,26 +193,51 @@ function PlanetManager(){
   this.dirY = 1;
   this.velocity = 0;
 
-  this.dimention = 1800;
-  this.dimentionCheck = 876;
+  this.dimention = 900;
+  this.dimentionCheck = 900;
 
   this.isEnteringPlanet = false;
   this.planetEntered;
 
   // procedurally generated planets.
-  this.generatePlanets = function(xCoor, yCoor){
-    // - 746 _ 907
-    if(this.planets.length > 0){
-      this.planets.splice(0,this.planets.length);
-      this.planetsToPaint.splice(0,this.planetsToPaint.length);
+  this.generatePlanets = function(xCoor, yCoor, dir){
+    // mantain only the 5 last generated planets at all times
+    if(this.planets.length > 1){
+      this.planets.splice(0,1);
     }
-    this.xCoor = xCoor;
-    this.yCoor = yCoor;
+
+    let quadrantSize = this.dimention * 2;
+
+    // if this is the initial-check for the quadrant,
+    // then the 'center' is the coordinate x and the coordinate y
+    // of the player. Else, check which side was the quadrant left from.
+    if(dir){
+      switch (dir) {
+        case 1: // left
+          this.xCoor -= quadrantSize;
+          break;
+        case 2: // right
+          this.xCoor += quadrantSize;
+          break;
+        case 3: // bottom
+          this.yCoor -= quadrantSize;
+          break;
+        case 4: // top
+        this.yCoor += quadrantSize;
+          break;
+        default:
+
+      }
+    }
+    else{
+      this.xCoor = xCoor;
+      this.yCoor = yCoor;
+    }
 
     var x, y, currX, currY;
     var endedPlanetGeneration = false;
 
-    // start from the top right
+    // start from the top left
 
     let xMax = parseInt(this.xCoor) + this.dimention;
     let xMin = parseInt(this.xCoor) - this.dimention;
@@ -223,28 +246,36 @@ function PlanetManager(){
     x = xMin;
     y = parseInt(this.yCoor) + this.dimention;
 
-    while(!endedPlanetGeneration){
-      if(Math.abs(x) % this.dimention == this.dimentionCheck){
-        if(Math.abs(y) % this.dimention == this.dimentionCheck){
-          currX = width / 2 + ((x - x /12) - this.xCoor);
-          currY = height / 2 - ((y + y /12) - this.yCoor);
-          this.planets.push(new Planet(currX, currY, (x - x /12), (y + y /12)));
-          this.planetsToPaint.push(false);
-          //console.log("x: " + (x - x /12) + " y: " + (y + y /12));
-        }
+
+    /*
+    find the x
+    if there's an x, the find the y
+
+    one x and one y every quadrant
+
+    */
+
+    for(var i = 0; i < quadrantSize; i++){
+      if(Math.abs(x) % quadrantSize  == this.dimentionCheck){
+          currX = width / 2 + ((x - x /12) - xCoor);
+          for(var i = 0; i < quadrantSize; i++){
+            if(Math.abs(y) % quadrantSize  == this.dimentionCheck){
+                currY = height / 2 - ((y + y /12) - yCoor);
+                break;
+            }
+            y--;
+          }
+          break;
       }
       x++;
-      if(x > xMax){
-        if(y <= yMin){
-          endedPlanetGeneration = true;
-        }
-        else{
-          x = xMin;
-          y--;
-        }
-      }
     }
-    //console.log(this.planets.length);
+    this.planets.push(new Planet(currX, currY, (x - x /12), (y + y /12)));
+
+    console.log("quadrant x: " + this.xCoor + " y: " + this.yCoor);
+    for(var i = 0; i < this.planets.length; i++){
+      console.log("x: " + this.planets[i].coordX + " y: " + this.planets[i].coordY);
+    }
+
   }
 
 
@@ -255,9 +286,7 @@ function PlanetManager(){
     }
 
     for(var i = 0; i < this.planets.length; i++){
-      if(this.planetsToPaint[i]){
-        this.planets[i].show();
-      }
+      this.planets[i].show();
     }
   }
 
@@ -282,27 +311,26 @@ function PlanetManager(){
     this.dirX = x2;
     this.dirY = y2;
 
-    // check if the ship has exited the cuadrant of planets so that it generates
+    // check if the ship has exited the quadrant of planets so that it generates
     // a new array of planets
-    if(xCoor < this.xCoor - this.dimention || xCoor > this.xCoor + this.dimention || yCoor < this.yCoor - this.dimention || yCoor > this.yCoor + this.dimention){
-      this.generatePlanets(xCoor, yCoor);
+
+    if(xCoor < this.xCoor - this.dimention){
+      // left
+      this.generatePlanets(xCoor, yCoor, 1);
+    }
+    else if(xCoor > this.xCoor + this.dimention){
+      // right
+      this.generatePlanets(xCoor, yCoor, 2);
+    }
+    else if(yCoor < this.yCoor - this.dimention){
+      // bottom
+      this.generatePlanets(xCoor, yCoor, 3);
+    }
+    else if(yCoor > this.yCoor + this.dimention){
+      // top
+      this.generatePlanets(xCoor, yCoor, 4);
     }
 
-    // paint planets
-    var wDistance = width * 2;
-    var hDistance = height * 2;
-    if(this.planets.length > 0){
-      for(var planet = 0; planet < this.planets.length; planet++){
-        if(xCoor >= (this.planets[planet].coordX - wDistance) && xCoor <= (this.planets[planet].coordX + wDistance) && yCoor >= (this.planets[planet].coordY - hDistance) && yCoor <= (this.planets[planet].coordY + hDistance)){
-          this.planetsToPaint[planet] = true;
-          //console.log("paint");
-        }
-        else{
-          this.planetsToPaint[planet] = false;
-          //console.log("dont paint");
-        }
-      }
-    }
   }
 
   this.enterPlanet = function(xCoor, yCoor){
