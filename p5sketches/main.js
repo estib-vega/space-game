@@ -1,5 +1,49 @@
 var player, back, navigation, planets, coorSign, planetLevel;
 var pause, isInLevelPlanet, isEnteringPlanet, isExitingPlanet;
+
+function updateNavAndBack(){
+  navigation.move(player.rotationDelta, player.velocity);
+  navigation.update();
+  back.move(player.rotationDelta, player.velocity);
+  back.update();
+}
+
+function setupPlanetLevel(){
+  planetLevel = new PlanetLevel(planets.planetEntered.coordX, planets.planetEntered.coordY);
+  isInLevelPlanet = true;
+  player.moveToLowerEnd();
+  console.log("Inside");
+  coorSign.style("display", "none");
+}
+
+function showBackAndPlanets(){
+  back.show();
+  planets.show();
+}
+
+function updatePlanetAndPlayer(){
+  planets.move(player.rotationDelta, player.velocity, navigation.getCoordinates()[0], navigation.getCoordinates()[1]);
+  planets.update();
+  player.update();
+}
+
+function spaceExplorationLoop(){
+  background(0);
+  if(!pause){
+    if(!isEnteringPlanet){
+      updateNavAndBack();
+    }
+    else{
+      if(planets.isInsidePlanet() && !isExitingPlanet){
+        setupPlanetLevel();
+      }
+    }
+    updatePlanetAndPlayer();
+  }
+  showBackAndPlanets();
+  player.show();
+}
+
 function setup(){
   createCanvas(600, 600);
   angleMode(DEGREES);
@@ -16,44 +60,13 @@ function setup(){
 
 function draw(){
   if(!isInLevelPlanet){
-    background(0);
-    if(!pause){
-      if(!isEnteringPlanet){
-        navigation.move(player.rotationDelta, player.velocity);
-        navigation.update();
+    spaceExplorationLoop();
 
-        back.move(player.rotationDelta, player.velocity);
-        back.update();
-      }
-      else{
-        if(planets.isInsidePlanet() && !isExitingPlanet){
-          planetLevel = new PlanetLevel(planets.planetEntered.coordX, planets.planetEntered.coordY);
-          isInLevelPlanet = true;
-          player.moveToLowerEnd();
-          console.log("Inside");
-          coorSign.style("display", "none");
-        }
-        else{
-          //player.moveToCenter();
-        }
-      }
-      planets.move(player.rotationDelta, player.velocity, navigation.getCoordinates()[0], navigation.getCoordinates()[1]);
-
-      planets.update();
-
-      player.update();
-    }
-
-    back.show();
-
-    planets.show();
-
-    player.show();
-
+    // sign for debug purposes
     coorSign.html("X:" + navigation.getCoordinates()[0] + ", Y:" + navigation.getCoordinates()[1]);
   }
   else{
-    background(planets.planetEntered.r, planets.planetEntered.g, planets.planetEntered.b);
+    /*background(planets.planetEntered.r, planets.planetEntered.g, planets.planetEntered.b);
     if(!pause){
       player.update();
       planetLevel.update();
@@ -61,22 +74,19 @@ function draw(){
 
     planetLevel.show();
 
-    player.show();
+    player.show();*/
 
   }
 
 }
 
 function keyReleased(){
-  if(key != ' '){
+  if(key != ' ' && (keyCode === LEFT_ARROW || keyCode === RIGHT_ARROW)){
     player.rotate(0);
   }
   if(keyCode === UP_ARROW){
     if(!isInLevelPlanet){
       player.move(false);
-    }
-    else{
-      player.shoot();
     }
   }
 }
@@ -104,7 +114,7 @@ function keyPressed(){
     if(!pause){
       if(!isInLevelPlanet){
         planets.enterPlanet(navigation.getCoordinates()[0], navigation.getCoordinates()[1]);
-        isEnteringPlanet = planets.isEnteringPlanet;
+        isEnteringPlanet = true;
       }
     }
   }
