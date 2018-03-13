@@ -1,4 +1,5 @@
 function NavigationManager(seed){
+
   this.xCoor;
   this.yCoor;
 
@@ -7,9 +8,13 @@ function NavigationManager(seed){
 
   this.velocity = 0;
 
-  // TODO:generator that processes the seed to calculate some coordenates
-  this.xCoor = seed;
-  this.yCoor = seed;
+  // coordinate generator with seed
+
+  // Range is a fourth of the maximal safe integer
+  let range = Number.MAX_SAFE_INTEGER / 4;
+
+  this.xCoor = range * Math.cos(Math.sin(seed));
+  this.yCoor = range * Math.sin(Math.cos(seed));
 
   this.getCoordinates = function(){
     return [this.xCoor, this.yCoor];
@@ -19,8 +24,8 @@ function NavigationManager(seed){
     this.xCoor -= this.dirX * this.velocity * 3;
     this.yCoor += this.dirY * this.velocity * 3;
   }
-  this.move = function(delta, velocity){
 
+  this.move = function(delta, velocity){
     this.velocity = velocity;
 
     var angle = delta * Math.PI / 180;
@@ -31,5 +36,9 @@ function NavigationManager(seed){
     this.dirY = y2;
   }
 
+  this.resetDir = function(){
+    this.dirX = 0;
+    this.dirY = 1;
+  }
 
 }

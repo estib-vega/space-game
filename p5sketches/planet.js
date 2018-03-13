@@ -195,7 +195,7 @@ function PlanetManager(){
   this.velocity = 0;
 
   this.dimention = 900;
-  this.dimentionCheck = 900;
+  this.dimentionCheck = 975;
 
   this.planetEntered;
   this.isEnteringPlanet = false;
@@ -247,6 +247,9 @@ function PlanetManager(){
     x = xMin;
     y = parseInt(this.yCoor) + this.dimention;
 
+    // result coordinates
+
+    let endX, endY;
 
     /*
     find the x
@@ -258,23 +261,25 @@ function PlanetManager(){
 
     for(var i = 0; i < quadrantSize; i++){
       if(Math.abs(x) % quadrantSize  == this.dimentionCheck){
-          currX = width / 2 + ((x - x /12) - xCoor);
-          for(var i = 0; i < quadrantSize; i++){
-            if(Math.abs(y) % quadrantSize  == this.dimentionCheck){
-                currY = height / 2 - ((y + y /12) - yCoor);
-                break;
-            }
-            y--;
+        endX = x + 3.14159265359 * Math.sin(x);
+        currX = width / 2 + (endX - xCoor);
+        for(var i = 0; i < quadrantSize; i++){
+          if(Math.abs(y) % quadrantSize  == this.dimentionCheck){
+            endY = y + 3.14159265359 * Math.cos(y);
+            currY = height / 2 - (endY - yCoor);
+              break;
           }
-          break;
+          y--;
+        }
+        break;
       }
       x++;
     }
-    this.planets.push(new Planet(currX, currY, (x - x /12), (y + y /12)));
+    this.planets.push(new Planet(currX, currY, endX, endY));
 
-    /*console.log("quadrant x: " + this.xCoor + " y: " + this.yCoor);
+    /*console.log("\nquadrant x: " + this.xCoor + " y: " + this.yCoor);
     for(var i = 0; i < this.planets.length; i++){
-      console.log("x: " + this.planets[i].coordX + " y: " + this.planets[i].coordY);
+      console.log("Planet-" + (i + 1) + " x: " + this.planets[i].coordX + " y: " + this.planets[i].coordY);
     }*/
 
   }

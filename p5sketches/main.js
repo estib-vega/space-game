@@ -56,6 +56,7 @@ function planetLevelLoop(){
       planets.exitPlanet();
       player.moveToCenter();
       back.resetDir();
+      navigation.resetDir();
       isExitingPlanet = false;
       isInLevelPlanet = false;
       coorSign.style("display", "block");
@@ -80,6 +81,7 @@ function setup(){
   isEnteringPlanet, isExitingPlanet = false;
 }
 
+// Game Loop
 function draw(){
   if(!isInLevelPlanet){
     spaceExplorationLoop();
@@ -140,7 +142,7 @@ function keyPressed(){
   }
   if (keyCode === UP_ARROW) {
     if(!pause){
-      if(!isEnteringPlanet && !isInLevelPlanet){
+      if(!isEnteringPlanet && !isInLevelPlanet && !isExitingPlanet){
         player.move(true);
       }
 
