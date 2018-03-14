@@ -182,6 +182,10 @@ function Planet(x, y, coordX, coordY){
     this.isExitingPlanet = true;
   }
 
+  this.isStillExiting = function(){
+    return this.isExitingPlanet;
+  }
+
 }
 
 function PlanetManager(){
@@ -194,15 +198,15 @@ function PlanetManager(){
   this.dirY = 1;
   this.velocity = 0;
 
-  this.dimention = 900;
-  this.dimentionCheck = 975;
+  this.dimention = width * 1.5;
+  this.dimentionCheck = 900;
 
   this.planetEntered;
   this.isEnteringPlanet = false;
 
   // procedurally generated planets.
   this.generatePlanets = function(xCoor, yCoor, dir){
-    // mantain only the 5 last generated planets at all times
+    // mantain only the last 2 generated planets at all times
     if(this.planets.length > 1){
       this.planets.splice(0,1);
     }
@@ -224,7 +228,7 @@ function PlanetManager(){
           this.yCoor -= quadrantSize;
           break;
         case 4: // top
-        this.yCoor += quadrantSize;
+          this.yCoor += quadrantSize;
           break;
         default:
 
@@ -261,11 +265,11 @@ function PlanetManager(){
 
     for(var i = 0; i < quadrantSize; i++){
       if(Math.abs(x) % quadrantSize  == this.dimentionCheck){
-        endX = x + 3.14159265359 * Math.sin(x);
+        endX = x + 314.159265359 * Math.sin(x);
         currX = width / 2 + (endX - xCoor);
         for(var i = 0; i < quadrantSize; i++){
           if(Math.abs(y) % quadrantSize  == this.dimentionCheck){
-            endY = y + 3.14159265359 * Math.cos(y);
+            endY = y + 314.159265359 * Math.cos(y);
             currY = height / 2 - (endY - yCoor);
               break;
           }
@@ -320,19 +324,21 @@ function PlanetManager(){
     // check if the ship has exited the quadrant of planets so that it generates
     // a new array of planets
 
-    if(xCoor < this.xCoor - this.dimention){
+    let quadrantThreshold = this.dimention;
+
+    if(xCoor < this.xCoor - quadrantThreshold){
       // left
       this.generatePlanets(xCoor, yCoor, 1);
     }
-    else if(xCoor > this.xCoor + this.dimention){
+    else if(xCoor > this.xCoor + quadrantThreshold){
       // right
       this.generatePlanets(xCoor, yCoor, 2);
     }
-    else if(yCoor < this.yCoor - this.dimention){
+    else if(yCoor < this.yCoor - quadrantThreshold){
       // bottom
       this.generatePlanets(xCoor, yCoor, 3);
     }
-    else if(yCoor > this.yCoor + this.dimention){
+    else if(yCoor > this.yCoor + quadrantThreshold){
       // top
       this.generatePlanets(xCoor, yCoor, 4);
     }
@@ -370,6 +376,10 @@ function PlanetManager(){
       this.isEnteringPlanet = false;
     }
     return this.planetEntered ? this.planetEntered.isInsidePlanet : false;
+  }
+
+  this.isStillExiting = function(){
+    return this.planetEntered ? this.planetEntered.isStillExiting() : false;
   }
 
 }

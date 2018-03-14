@@ -1,4 +1,4 @@
-function NavigationManager(seed){
+function NavigationManager(seed, debug){
 
   this.xCoor;
   this.yCoor;
@@ -8,13 +8,32 @@ function NavigationManager(seed){
 
   this.velocity = 0;
 
+  this.dimention = width * 1.5;
+
   // coordinate generator with seed
 
-  // Range is a fourth of the maximal safe integer
-  let range = Number.MAX_SAFE_INTEGER / 4;
+  // Range is a +-fourth of the maximal safe integer
+  if(!debug){
+    let range = Number.MAX_SAFE_INTEGER / 4;
 
-  this.xCoor = range * Math.cos(Math.sin(seed));
-  this.yCoor = range * Math.sin(Math.cos(seed));
+    let preeliminarX = parseInt(-(range / 2) + (range / 2) * Math.cos(Math.sin(seed)));
+    let preeliminarY = parseInt(-(range / 2) + (range / 2) * Math.sin(Math.cos(seed)));
+
+    while(Math.abs(preeliminarX) % (this.dimention * 2) != 900){
+      preeliminarX++;
+    }
+
+    while (Math.abs(preeliminarY) % (this.dimention * 2) != 900) {
+      preeliminarY++;
+    }
+
+    this.xCoor = preeliminarX;
+    this.yCoor = preeliminarY;
+  }
+  else{
+    this.xCoor = seed;
+    this.yCoor = seed;
+  }
 
   this.getCoordinates = function(){
     return [this.xCoor, this.yCoor];

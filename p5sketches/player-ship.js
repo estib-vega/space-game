@@ -31,7 +31,7 @@ function PlayerShip(){
     rect(-6, 0 + 10 + (5 * this.velocity / 4), this.size * 2, this.size + (10 * this.velocity / 4));
     rect(6, 0 + 10 + (5 * this.velocity / 4), this.size * 2, this.size + (10 * this.velocity / 4));
 
-    fill(255);
+    fill(255, 20, 125);
 
     rect(0,- 3, this.size, this.size * 8);
     rect(0, 0, this.size * 3, this.size * 3);
@@ -118,7 +118,7 @@ function PlayerShip(){
       }
       else{
         if(this.x < width / 2){
-          this.x++;
+          this.x += 5;
         }
         else{
           this.x--;

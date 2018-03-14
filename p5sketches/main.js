@@ -31,6 +31,10 @@ function updatePlanetAndPlayer(){
 function spaceExplorationLoop(){
   background(0);
   if(!pause){
+    if(isExitingPlanet && !planets.isStillExiting()){
+      //console.log("Outside");
+      isExitingPlanet = false;
+    }
     if(!isEnteringPlanet){
       updateNavAndBack();
     }
@@ -57,10 +61,8 @@ function planetLevelLoop(){
       player.moveToCenter();
       back.resetDir();
       navigation.resetDir();
-      isExitingPlanet = false;
       isInLevelPlanet = false;
       coorSign.style("display", "block");
-      console.log("Outside");
     }
   }
   planetLevel.show();
@@ -72,7 +74,7 @@ function setup(){
   angleMode(DEGREES);
   back = new BackgroundManager(400);
   player = new PlayerShip();
-  navigation = new NavigationManager(900);
+  navigation = new NavigationManager(14567);
   coorSign = select("#Coordinate");
   planets = new PlanetManager();
   planets.generatePlanets(navigation.getCoordinates()[0], navigation.getCoordinates()[1]);
@@ -114,28 +116,24 @@ function keyReleased(){
 function keyPressed(){
   if (keyCode === RIGHT_ARROW) {
     if(!pause){
-      if(!isEnteringPlanet){
+      if(!isEnteringPlanet && !isExitingPlanet){
         if(!isInLevelPlanet){
           player.rotate(1);
         }
         else{
-          if(!isExitingPlanet){
-            player.directionSet(1);
-          }
+          player.directionSet(1);
         }
       }
     }
   }
   if (keyCode === LEFT_ARROW) {
     if(!pause){
-      if(!isEnteringPlanet){
+      if(!isEnteringPlanet && !isExitingPlanet){
         if(!isInLevelPlanet){
           player.rotate(-1);
         }
         else{
-          if(!isExitingPlanet){
             player.directionSet(-1);
-          }
         }
       }
     }
