@@ -14,7 +14,7 @@ function setupPlanetLevel(){
   isEnteringPlanet = false;
   player.moveToLowerEnd();
   //console.log("Inside");
-  coorSign.style("display", "none");
+  //coorSign.style("display", "none");
 }
 
 function showBackAndPlanets(){
@@ -53,7 +53,7 @@ function planetLevelLoop(){
   background(planets.planetEntered.r, planets.planetEntered.g, planets.planetEntered.b);
   if(!pause){
     player.update();
-    planetLevel.update();
+    planetLevel.update(player.x);
 
     if(isExitingPlanet && planetLevel.fadeOutFinished()){
       //console.log("Ended fadeOut");
@@ -62,7 +62,7 @@ function planetLevelLoop(){
       back.resetDir();
       navigation.resetDir();
       isInLevelPlanet = false;
-      coorSign.style("display", "block");
+      //coorSign.style("display", "block");
     }
   }
   planetLevel.show();
@@ -76,6 +76,7 @@ function setup(){
   player = new PlayerShip();
   navigation = new NavigationManager(14567);
   coorSign = select("#Coordinate");
+  coorSign.style("display", "none");
   planets = new PlanetManager();
   planets.generatePlanets(navigation.getCoordinates()[0], navigation.getCoordinates()[1]);
   pause = false;
@@ -89,7 +90,7 @@ function draw(){
     spaceExplorationLoop();
 
     // sign for debug purposes
-    coorSign.html("X:" + navigation.getCoordinates()[0] + ", Y:" + navigation.getCoordinates()[1]);
+    //coorSign.html("X:" + navigation.getCoordinates()[0] + ", Y:" + navigation.getCoordinates()[1]);
   }
   else{
     planetLevelLoop();

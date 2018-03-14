@@ -14,6 +14,7 @@ function PlayerShip(){
   this.direction = 0;
 
   this.positionInCenter = false;
+  this.positionXDelta = 0;
 
   this.show = function(){
     var angle = this.angle * Math.PI / 180;
@@ -108,24 +109,28 @@ function PlayerShip(){
 
       if(this.x == width / 2){
         positionXEnded = true;
-
-        if(this.y == height / 2){
-          positionYEnded = true;
-        }
-        else{
-          this.y -= 10;
-        }
       }
       else{
-        if(this.x < width / 2){
-          this.x += 5;
+        if(Math.abs(this.x - (width /2)) < 0.2){
+          this.x = width / 2;
         }
         else{
-          this.x--;
+          if(this.x < width / 2){
+            this.x += this.positionXDelta;
+          }
+          else{
+            this.x -= this.positionXDelta;
+          }
         }
       }
+      if(this.y == height / 2){
+        positionYEnded = true;
+      }
+      else{
+        this.y -= 10;
+      }
 
-      if(positionYEnded){
+      if(positionYEnded && positionXEnded){
         this.positionInCenter = false;
         this.isInPlanet = false;
         this.rotationDelta = 0;
@@ -151,6 +156,7 @@ function PlayerShip(){
   }
 
   this.moveToCenter = function(){
+    this.positionXDelta = Math.abs(this.x - (width / 2)) / 35;
     this.positionInCenter = true;
   }
 

@@ -199,7 +199,7 @@ function PlanetManager(){
   this.velocity = 0;
 
   this.dimention = width * 1.5;
-  this.dimentionCheck = 900;
+  this.dimentionCheck = 900; // should preferably be in the range 600 - 1200
 
   this.planetEntered;
   this.isEnteringPlanet = false;
