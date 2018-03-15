@@ -10,9 +10,17 @@ function SingleStar(x, y, size){
 
   this.show = function(){
     noStroke();
-    //rectMode(CENTER);
+
+    if(this.size > 1.9){
+      fill(200);
+      ellipse(this.x, this.y, this.size * 0.5, this.size * 1.75);
+
+      fill(200);
+      ellipse(this.x, this.y, this.size * 1.75, this.size * 0.5);
+    }
+
+
     fill(255);
-    //rect(this.x, this.y, this.size, this.size);
     ellipse(this.x, this.y, this.size, this.size);
   }
 

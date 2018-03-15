@@ -21,10 +21,12 @@ function Moon(x, y, radius, color, orbitLengthX, orbitLengthY){
 
   this.addedRadius = 0;
 
+
   this.show = function(){
     noStroke();
-    fill(this.r, this.g, this.b);
     ellipseMode(RADIUS);
+
+    fill(this.r, this.g, this.b);
     ellipse(this.currX, this.currY, this.radius + this.addedRadius / 8, this.radius + this.addedRadius / 8);
   }
 
@@ -61,7 +63,7 @@ function Planet(x, y, coordX, coordY){
   this.x = x;
   this.y = y;
   this.radius = 60 + Math.abs(Math.cos(coordX)) * 50;
-  this.size = 3;
+  this.size = 3; // added velocity for the illusion of 3d space
 
   this.coordX = coordX;
   this.coordY = coordY;
@@ -80,6 +82,19 @@ function Planet(x, y, coordX, coordY){
   this.sig = function(x){
     return 1 / (1 + Math.exp(-x));
   }
+
+  // procedurally generated name
+  // 65 - 90 ascii uppercase letters
+  let firstLetterN = parseInt(65 + 25 * Math.abs(this.sig(Math.cos(coordX) + Math.sin(coordY))));
+  let firstLetterChar = String.fromCharCode(firstLetterN);
+
+  let secondLetterN = parseInt(65 + 25 * Math.abs(Math.sin(coordY - 280 * this.sig(Math.cos(coordX) + Math.sin(coordY)))));
+  let secondLetterChar = String.fromCharCode(secondLetterN);
+
+  let numberCombination = parseInt(133 + 867 * Math.abs(Math.cos(coordX - 200 * this.sig(Math.cos(coordX) + Math.sin(coordY)))))
+
+
+  this.planetName = secondLetterChar + firstLetterChar + " - " + numberCombination;
 
   // proceduarally generated color
   this.r = 255 * Math.abs(Math.cos(coordX - 200 * this.sig(Math.cos(coordX) + Math.sin(coordY))));
@@ -106,8 +121,12 @@ function Planet(x, y, coordX, coordY){
 
   this.show = function(){
     noStroke();
-    fill(this.r, this.g, this.b);
     ellipseMode(RADIUS);
+
+    fill(this.r, this.g, this.b, 70);
+    ellipse(this.x, this.y, (this.radius + this.addedRadius) * 1.05, (this.radius + this.addedRadius) * 1.05);
+
+    fill(this.r, this.g, this.b);
     ellipse(this.x, this.y, this.radius + this.addedRadius, this.radius + this.addedRadius);
 
     if(this.moonNumber > 0){
@@ -115,6 +134,13 @@ function Planet(x, y, coordX, coordY){
         this.moons[i].show();
       }
     }
+
+    // name
+    textSize(18);
+    textFont('Arial');
+    var alphaText = 250;
+    fill(255, alphaText);
+    text(this.planetName, this.x * 1.1 + (this.radius + this.addedRadius), this.y * 1.1 - (this.radius + this.addedRadius));
 
   }
 
