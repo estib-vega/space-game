@@ -22,6 +22,11 @@ function PlayerShip(){
     var x2 = - Math.sin(angle) * this.velocity * 2;
     var y2 = Math.cos(angle) * this.velocity * 2;
 
+    var x = 0;
+    var y = 0;
+
+    let scale = 0.7;
+
     noStroke();
     translate(this.x - x2, this.y - y2);
     rotate(this.angle);
@@ -29,16 +34,90 @@ function PlayerShip(){
 
     fill(255 - (222 * this.velocity / 4), 200 - (41 * this.velocity / 4), 0 + (255 * this.velocity / 4));
 
-    rect(-6, 0 + 10 + (5 * this.velocity / 4), this.size * 2, this.size + (10 * this.velocity / 4));
-    rect(6, 0 + 10 + (5 * this.velocity / 4), this.size * 2, this.size + (10 * this.velocity / 4));
+    rect(-6, 0 + 24 + (10 * this.velocity / 4), this.size * 2, this.size + (20 * this.velocity / 4));
+    rect(6, 0 + 24 + (10 * this.velocity / 4), this.size * 2, this.size + (20 * this.velocity / 4));
 
-    fill(255, 20, 125);
 
-    rect(0,- 3, this.size, this.size * 8);
-    rect(0, 0, this.size * 3, this.size * 3);
-    rect(0, 4, this.size * 8, this.size * 2);
-    rect(- 17, 0, this.size, this.size * 6);
-    rect(17, 0, this.size, this.size * 6);
+
+      noStroke();
+      fill(125, 0, 31);
+
+      beginShape();
+      vertex(0, -42*scale);
+      vertex(-12*scale, -20*scale);
+      vertex(-23*scale, -20*scale);
+      vertex(-31*scale, 30*scale);
+      vertex(0, 27*scale);
+      vertex(31*scale, 30*scale);
+      vertex(23*scale, -20*scale);
+      vertex(12*scale, -20*scale);
+      endShape(CLOSE);
+
+      beginShape();
+      vertex(25*scale, 5*scale);
+      vertex(30*scale, 30*scale);
+      vertex(51*scale, 21*scale);
+      endShape(CLOSE);
+
+      beginShape();
+      vertex(-25*scale, 5*scale);
+      vertex(-30*scale, 30*scale);
+      vertex(-51*scale, 21*scale);
+      endShape(CLOSE);
+
+      fill(213,25, 72);
+
+      beginShape();
+      vertex(-1*scale, -40*scale);
+      vertex(-21*scale, -5*scale);
+      vertex(-1*scale, 10*scale);
+      endShape(CLOSE);
+
+      beginShape();
+      vertex(1*scale, -40*scale);
+      vertex(21*scale, -5*scale);
+      vertex(1*scale, 10*scale);
+      endShape(CLOSE);
+
+      beginShape();
+      vertex(x+23*scale, y-3*scale);
+      vertex(x+3*scale, y+11*scale);
+      vertex(x+31*scale, y+30*scale);
+      endShape(CLOSE);
+
+      beginShape();
+      vertex(-23*scale, -3*scale);
+      vertex(-3*scale, 11*scale);
+      vertex(-31*scale, 30*scale);
+      endShape(CLOSE);
+
+      beginShape();
+      vertex(-27*scale, 5*scale);
+      vertex(-32*scale, 30*scale);
+      vertex(-51*scale, 21*scale);
+      endShape(CLOSE);
+
+      beginShape();
+      vertex(27*scale, 5*scale);
+      vertex(32*scale, 30*scale);
+      vertex(51*scale, 21*scale);
+      endShape(CLOSE);
+
+      beginShape();
+      vertex(-30*scale, 30*scale);
+      vertex(0, 13*scale);
+      vertex(30*scale, 30*scale);
+      vertex(0, 23*scale);
+      endShape(CLOSE);
+
+      fill(0,100,200);
+
+      beginShape();
+      vertex(0, -25*scale);
+      vertex(-18*scale, -5*scale);
+      vertex(0, -15*scale);
+      vertex(18*scale, -5*scale);
+      endShape(CLOSE);
   }
 
   this.update = function(){
